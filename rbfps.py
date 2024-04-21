@@ -1,8 +1,9 @@
 import os
 import json
-import msvcrt
 import sys
 from datetime import datetime
+import tkinter as tk
+from tkinter import simpledialog, messagebox
 
 def install_module(module_name):
     """
@@ -12,14 +13,14 @@ def install_module(module_name):
         import subprocess
         subprocess.check_call([sys.executable, '-m', 'pip', 'install', module_name])
     except Exception as e:
-        print("Error installing {module_name} module: {e}")
+        messagebox.showerror("Error", f"Error installing {module_name} module: {e}")
         sys.exit(1)
 
 def check_and_install_module(module_name):
     try:
         __import__(module_name)
     except ImportError:
-        print(f"{module_name} module not found. Installing...")
+        messagebox.showinfo("Info", f"{module_name} module not found. Installing...")
         install_module(module_name)
 
 required_modules = ['colorama']
@@ -31,22 +32,22 @@ from colorama import init, Fore
 init(autoreset=True)
 
 def get_integer_input(prompt):
-    while True:
-        try:
-            value = int(input(prompt))
-            return value
-        except ValueError:
-            time_now = datetime.now().strftime("%H:%M:%S")
-            print(f"[{Fore.YELLOW}{time_now}{Fore.RESET}] {Fore.RED}unsuccessful{Fore.RESET} | Please enter an integer value.")
+    value = simpledialog.askinteger("Input", prompt)
+    if value is None:
+        sys.exit()
+    return value
 
 def log(message, success=True):
     time_now = datetime.now().strftime("%H:%M:%S")
     if success:
-        print(f"[{Fore.YELLOW}{time_now}{Fore.RESET}] {Fore.GREEN}successful{Fore.RESET} | {message}")
+        messagebox.showinfo("Info", f"[{time_now}] successful | {message}")
     else:
-        print(f"[{Fore.YELLOW}{time_now}{Fore.RESET}] {Fore.RED}unsuccessful{Fore.RESET} | {message}")
+        messagebox.showerror("Error", f"[{time_now}] unsuccessful | {message}")
 
-fps_limit = get_integer_input(f"[{Fore.YELLOW}{datetime.now().strftime('%H:%M:%S')}{Fore.RESET}] {Fore.CYAN}query{Fore.RESET} | Enter FPS limit (eg. 144): ")
+root = tk.Tk()
+root.withdraw()
+
+fps_limit = get_integer_input("Enter FPS limit (eg. 144): ")
 
 def find_folder_with_exe(directory, target_exe):
     try:
@@ -80,9 +81,5 @@ if folder:
 else:
     log("No folder containing 'RobloxPlayerBeta.exe' found in the specified directory.", success=False)
 
-print(f"[{Fore.YELLOW}{datetime.now().strftime('%H:%M:%S')}{Fore.RESET}] {Fore.LIGHTMAGENTA_EX}info{Fore.RESET} | Please note that your game must restart for the FPS unlocker to take effect. If any further help is needed, it can be found in the documentation.")
-print(f"[{Fore.YELLOW}{datetime.now().strftime('%H:%M:%S')}{Fore.RESET}] {Fore.GREEN}successful{Fore.RESET} | Press enter to close this window.")
-while True:
-    char = msvcrt.getch()
-    if char == b'\r':
-        break
+messagebox.showinfo("Info", "Please note that your game must restart for the FPS unlocker to take effect. If any further help is needed, it can be found in the documentation.")
+messagebox.showinfo("Info", "Press OK to close this window.")
